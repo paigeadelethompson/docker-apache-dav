@@ -1,0 +1,33 @@
+FROM paigeadele/void:aarch64-musl-latest
+
+ENV ADMIN_EMAIL="no-reply@httpd.local"
+
+ENV SERVER_NAME="httpd.local" 
+
+ENV HTTP_PORT="80"
+
+ENV HTTPS_PORT="443"
+
+ENV MOUNT_POINT="/mnt"
+
+ENV SSL_CERT=/etc/ssl/certificates/apache/server.crt
+
+ENV SSL_KEY=/etc/ssl/certificates/apache/server.key
+
+RUN xbps-install -Suy
+
+RUN xbps-install -Suy apache 
+
+RUN mkdir -p /var/run/httpd/
+
+RUN chown -R _apache:_apache /var/run/httpd
+
+ADD httpd.conf /etc/apache/httpd.conf
+
+EXPOSE ${HTTP_PORT}
+
+EXPOSE ${HTTPS_PORT}
+
+VOLUME /var/log/httpd
+
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
