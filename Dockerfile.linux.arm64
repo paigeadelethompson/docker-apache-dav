@@ -18,11 +18,15 @@ RUN xbps-install -Suy
 
 RUN xbps-install -Suy apache 
 
+RUN mkdir /etc/apache/users
+
 RUN mkdir -p /var/run/httpd/
 
-RUN chown -R _apache:_apache /var/run/httpd
+RUN chown -R _apache:_apache /var/run/httpd /etc/apache/users /mnt
 
 ADD httpd.conf /etc/apache/httpd.conf
+
+RUN rm -rf /etc/apache/extra
 
 EXPOSE ${HTTP_PORT}
 
@@ -30,4 +34,10 @@ EXPOSE ${HTTPS_PORT}
 
 VOLUME /var/log/httpd
 
+VOLUME ${MOUNT_POINT}
+
+VOLUME /etc/ssl/certificates/apache
+
+VOLUME /etc/apache/users/
+	
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
